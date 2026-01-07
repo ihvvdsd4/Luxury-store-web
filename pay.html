@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>|LuxDesiglnl</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.paypal.com/sdk/js?client-id=ATKxy6wM9X3tvq4yNX5M_bGm7dMGl43JmsNZwPxtxPkKSkvkyZ27UauZiMGgEeEcaxBN0Pzdb91caKF8=USD"></script>
+
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --accent-color: #d4af37;
+            --card-bg: #161616;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            width: 90%;
+            max-width: 900px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #222;
+        }
+
+        .order-summary {
+            padding-left: 20px;
+            border-left: 1px solid #333;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            color: var(--text-dim);
+        }
+
+        .total {
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            font-size: 1.4rem;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        #paypal-button-container {
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-container { grid-template-columns: 1fr; }
+            .order-summary { border-left: none; border-bottom: 1px solid #333; padding-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="checkout-container">
+        <div class="order-summary">
+            <h2 style="color: var(--accent-color);">ملخص المشروع</h2>
+            <div class="summary-item">
+                <span>باقة التصميم </span>
+                <span>$50</span>
+            </div>
+            <div class="summary-item">
+                <span>رسوم الخدمة</span>
+                <span>$50.00</span>
+            </div>
+            <div class="total">
+                <span>الإجمالي</span>
+                <span id="amount">50.00</span> $
+            </div>
+        </div>
+
+        <div class="payment-area">
+            <h3>إتمام الدفع الآمن</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 20px;">
+                اختر وسيلة الدفع المفضلة لديك لإتمام العملية فوراً.
+            </p>
+            
+            <div id="paypal-button-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // إعداد أزرار PayPal
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                // تحديد المبلغ المالي
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: '50' // المبلغ الإجمالي
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                // عند نجاح عملية الدفع
+                return actions.order.capture().then(function(details) {
+                    alert('تمت العملية بنجاح! شكراً لك ' + details.payer.name.given_name);
+                    // هنا يمكنك توجيه المستخدم لصفحة "شكرًا لك"
+                    window.location.href = "success.html";
+                });
+            },
+            onError: function(err) {
+                // في حالة حدوث خطأ
+                console.error('خطأ في عملية الدفع:', err);
+                alert('عذراً، حدث خطأ أثناء معالجة عملية الدفع.');
+            }
+        }).render('#paypal-button-container'); // عرض الأزرار في الحاوية المحددة
+    </script>
+
+</body>
+</html>

@@ -3,187 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Support | LuxDesign</title>
+    <title>تواصل معنا | LuxDesign</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0a0a0a;
-            --accent-color: #d4af37;
-            --chat-bg: #161616;
-            --text-main: #ffffff;
+            --bg: #0a0a0a;
+            --gold: #d4af37;
+            --card: #161616;
+            --whatsapp-color: #25D366;
         }
 
-        /* أيقونة الشات الثابتة */
-        .chat-widget {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1000;
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: white;
             font-family: 'Cairo', sans-serif;
-        }
-
-        .chat-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--accent-color);
-            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+            height: 100vh;
+        }
+
+        .chat-wrapper {
+            width: 100%;
+            max-width: 450px;
+            height: 90vh;
+            background: var(--card);
+            border: 1px solid #222;
+            display: flex;
+            flex-direction: column;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* رأس الصفحة مع زر الواتساب */
+        .header {
+            padding: 15px 20px;
+            background: #1f1f1f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gold);
+        }
+
+        .whatsapp-link {
+            background: var(--whatsapp-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
             transition: 0.3s;
         }
 
-        .chat-icon:hover { transform: scale(1.1); }
+        .whatsapp-link:hover { transform: scale(1.05); }
 
-        /* صندوق المحادثة */
-        .chat-box {
-            position: absolute;
-            bottom: 80px;
-            right: 0;
-            width: 350px;
-            height: 450px;
-            background: var(--chat-bg);
-            border: 1px solid #222;
-            border-radius: 15px;
-            display: none; /* مخفي افتراضياً */
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.8);
-        }
-
-        .chat-header {
-            background: #222;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid var(--accent-color);
-        }
-
-        .chat-header img { width: 40px; border-radius: 50%; margin-left: 10px; }
-
-        .chat-messages {
+        .messages-area {
             flex: 1;
-            padding: 15px;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .message {
+        .msg {
             padding: 10px 15px;
-            border-radius: 10px;
-            max-width: 80%;
+            border-radius: 12px;
+            max-width: 75%;
             font-size: 0.9rem;
         }
 
-        .message.received { background: #333; align-self: flex-start; }
-        .message.sent { background: var(--accent-color); color: #000; align-self: flex-end; }
+        .sent { background: var(--gold); color: black; align-self: flex-end; }
+        .received { background: #222; color: white; align-self: flex-start; }
+        .msg img { max-width: 100%; border-radius: 8px; display: block; margin: 5px 0; }
 
-        .chat-input {
+        .input-bar {
             padding: 15px;
+            background: #1f1f1f;
             display: flex;
-            border-top: 1px solid #222;
+            align-items: center;
+            gap: 10px;
         }
 
-        .chat-input input {
+        input[type="text"] {
             flex: 1;
-            background: #0a0a0a;
+            background: #000;
             border: 1px solid #333;
-            padding: 10px;
             color: white;
-            border-radius: 5px;
+            padding: 10px;
+            border-radius: 8px;
             outline: none;
         }
 
-        .send-btn {
-            background: none;
-            border: none;
-            color: var(--accent-color);
-            margin-right: 10px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+        .btn { background: none; border: none; color: var(--gold); font-size: 1.4rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="chat-widget">
-        <div class="chat-icon" onclick="toggleChat()">
-            💬
-        </div>
-
-        <div class="chat-box" id="chatBox">
-            <div class="chat-header">
-                <div style="width: 10px; height: 10px; background: #2ecc71; border-radius: 50%; margin-left: 8px;"></div>
-                <span>الدعم الفني - LuxDesign</span>
-            </div>
-            
-            <div class="chat-messages" id="chatMessages">
-                <div class="message received">مرحباً بك! كيف يمكننا مساعدتك في تصميم موقعك الفاخر اليوم؟</div>
-            </div>
-
-            <div class="chat-input">
-                <input type="text" id="userInput" placeholder="اكتب رسالتك هنا...">
-                <button class="send-btn" onclick="sendMessage()">إرسال</button>
-            </div>
-        </div>
+<div class="chat-wrapper">
+    <div class="header">
+        <span style="font-weight: bold; color: var(--gold);">LuxDesign Chat</span>
+        <a href="https://wa.me/966XXXXXXXXX" class="whatsapp-link" target="_blank">
+            تواصل عبر واتساب ✅
+        </a>
     </div>
 
-    <script>
-        // فتح وإغلاق الصندوق
-        function toggleChat() {
-            const chatBox = document.getElementById('chatBox');
-            chatBox.style.display = (chatBox.style.display === 'flex') ? 'none' : 'flex';
-            
-            // طلب إذن الإشعارات عند فتح الشات لأول مرة
-            if (Notification.permission !== "granted") {
-                Notification.requestPermission();
-            }
+    <div class="messages-area" id="box">
+        <div class="msg received">مرحباً! كيف يمكننا مساعدتك اليوم؟</div>
+    </div>
+
+    <div class="input-bar">
+        <input type="file" id="imgInp" accept="image/*" style="display:none" onchange="upImg()">
+        <button class="btn" onclick="document.getElementById('imgInp').click()">🖼️</button>
+        <input type="text" id="txtInp" placeholder="اكتب هنا..." onkeypress="if(event.key==='Enter')sendTxt()">
+        <button class="btn" onclick="sendTxt()">✦</button>
+    </div>
+</div>
+
+<script>
+    const box = document.getElementById('box');
+
+    function sendTxt() {
+        const inp = document.getElementById('txtInp');
+        if(inp.value.trim() !== "") {
+            addMsg(inp.value, 'sent');
+            // خيار إضافي: يمكنك جعل الموقع يفتح واتساب تلقائياً بالرسالة المكتوبة
+            // window.open(`https://wa.me/966XXXXXXXXX?text=${encodeURIComponent(inp.value)}`, '_blank');
+            inp.value = "";
+        }
+    }
+
+    function upImg() {
+        const file = document.getElementById('imgInp').files[0];
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                addMsg(`<img src="${e.target.result}">`, 'sent', true);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function addMsg(content, side, isImg = false) {
+        const d = document.createElement('div');
+        d.className = 'msg ' + side;
+        if(isImg) d.innerHTML = content; else d.innerText = content;
+        box.appendChild(d);
+        box.scrollTop = box.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تواصل معنا | LuxDesign</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --gold: #d4af37;
+            --card: #161616;
+            --whatsapp-color: #25D366;
         }
 
-        function sendMessage() {
-            const input = document.getElementById('userInput');
-            const messagesContainer = document.getElementById('chatMessages');
-
-            if (input.value.trim() !== "") {
-                // إضافة رسالة المستخدم للواجهة
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'message sent';
-                msgDiv.innerText = input.value;
-                messagesContainer.appendChild(msgDiv);
-                
-                const userText = input.value;
-                input.value = "";
-
-                // محاكاة رد تلقائي وإرسال إشعار بعد 2 ثانية
-                setTimeout(() => {
-                    showReply("شكراً لتواصلك. سيقوم أحد مصممينا بالرد عليك فوراً.");
-                    triggerNotification("رسالة جديدة من عميل", userText);
-                }, 2000);
-            }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
-        function showReply(text) {
-            const messagesContainer = document.getElementById('chatMessages');
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'message received';
-            msgDiv.innerText = text;
-            messagesContainer.appendChild(msgDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        .chat-wrapper {
+            width: 100%;
+            max-width: 450px;
+            height: 90vh;
+            background: var(--card);
+            border: 1px solid #222;
+            display: flex;
+            flex-direction: column;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        // وظيفة الإشعار الذي يظهر على سطح المكتب أو الهاتف
-        function triggerNotification(title, body) {
-            if (Notification.permission === "granted") {
-                new Notification(title, {
-                    body: body,
-                    icon: 'https://cdn-icons-png.flaticon.com/512/1077/1077114.png' // يمكنك وضع شعار متجرك هنا
-                });
-            }
+        /* رأس الصفحة مع زر الواتساب */
+        .header {
+            padding: 15px 20px;
+            background: #1f1f1f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gold);
         }
-    </script>
+
+        .whatsapp-link {
+            background: var(--whatsapp-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+
+        .whatsapp-link:hover { transform: scale(1.05); }
+
+        .messages-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg {
+            padding: 10px 15px;
+            border-radius: 12px;
+            max-width: 75%;
+            font-size: 0.9rem;
+        }
+
+        .sent { background: var(--gold); color: black; align-self: flex-end; }
+        .received { background: #222; color: white; align-self: flex-start; }
+        .msg img { max-width: 100%; border-radius: 8px; display: block; margin: 5px 0; }
+
+        .input-bar {
+            padding: 15px;
+            background: #1f1f1f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: #000;
+            border: 1px solid #333;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .btn { background: none; border: none; color: var(--gold); font-size: 1.4rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="chat-wrapper">
+    <div class="header">
+        <span style="font-weight: bold; color: var(--gold);">LuxDesign Chat</span>
+        <a href="https://wa.me/966XXXXXXXXX" class="whatsapp-link" target="_blank">
+            تواصل عبر واتساب ✅
+        </a>
+    </div>
+
+    <div class="messages-area" id="box">
+        <div class="msg received">مرحباً! كيف يمكننا مساعدتك اليوم؟</div>
+    </div>
+
+    <div class="input-bar">
+        <input type="file" id="imgInp" accept="image/*" style="display:none" onchange="upImg()">
+        <button class="btn" onclick="document.getElementById('imgInp').click()">📷</button>
+        <input type="text" id="txtInp" placeholder="اكتب هنا..." onkeypress="if(event.key==='Enter')sendTxt()">
+        <button class="btn" onclick="sendTxt()">✦</button>
+    </div>
+</div>
+
+<script>
+    const box = document.getElementById('box');
+
+    function sendTxt() {
+        const inp = document.getElementById('txtInp');
+        if(inp.value.trim() !== "") {
+            addMsg(inp.value, 'sent');
+            // خيار إضافي: يمكنك جعل الموقع يفتح واتساب تلقائياً بالرسالة المكتوبة
+            // window.open(`https://wa.me/966XXXXXXXXX?text=${encodeURIComponent(inp.value)}`, '_blank');
+            inp.value = "";
+        }
+    }
+
+    function upImg() {
+        const file = document.getElementById('imgInp').files[0];
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                addMsg(`<img src="${e.target.result}">`, 'sent', true);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function addMsg(content, side, isImg = false) {
+        const d = document.createElement('div');
+        d.className = 'msg ' + side;
+        if(isImg) d.innerHTML = content; else d.innerText = content;
+        box.appendChild(d);
+        box.scrollTop = box.scrollHeight;
+    }
+</script>
+
 </body>
 </html>

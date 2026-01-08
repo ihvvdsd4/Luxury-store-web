@@ -3,144 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مركز الدعم الفني | LuxDesign</title>
+    <title>مركز التواصل المباشر</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #0a0a0a;
-            --gold: #d4af37;
-            --card: #161616;
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background: var(--bg);
-            font-family: 'Cairo', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .chat-wrapper {
-            width: 100%;
-            height: 100vh; /* الصفحة كاملة عبارة عن شات */
-            max-width: 600px;
-            background: var(--card);
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-        }
-
-        .header {
-            padding: 20px;
-            background: #1f1f1f;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--gold);
-        }
-
-        .messages-area {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
-        }
-
-        .msg {
-            padding: 12px 18px;
-            border-radius: 15px;
-            max-width: 80%;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .sent { background: var(--gold); color: black; align-self: flex-end; border-bottom-left-radius: 2px; }
-        .received { background: #262626; color: white; align-self: flex-start; border-bottom-right-radius: 2px; }
-
-        .input-bar {
-            padding: 20px;
-            background: #1f1f1f;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            background: #000;
-            border: 1px solid #333;
-            color: white;
-            padding: 12px;
-            border-radius: 10px;
-            outline: none;
-        }
-
+        :root { --bg: #0a0a0a; --gold: #d4af37; --card: #161616; }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); font-family: 'Cairo', sans-serif; display: flex; justify-content: center; }
+        .chat-wrapper { width: 100%; height: 100vh; max-width: 500px; background: var(--card); display: flex; flex-direction: column; }
+        .header { padding: 20px; background: #1f1f1f; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); }
+        .messages-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg { padding: 12px 18px; border-radius: 15px; max-width: 80%; font-size: 0.95rem; }
+        .sent { background: var(--gold); color: black; align-self: flex-end; }
+        .received { background: #262626; color: white; align-self: flex-start; }
+        .msg img { max-width: 100%; border-radius: 10px; }
+        .input-bar { padding: 20px; background: #1f1f1f; display: flex; gap: 10px; align-items: center; }
+        input[type="text"] { flex: 1; background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; outline: none; }
         .btn { background: none; border: none; color: var(--gold); font-size: 1.5rem; cursor: pointer; }
-
-        /* إخفاء فقاعة Tawk.to الأصلية */
-        iframe#tawkchat-iframe-container { display: none !important; }
+        /* إخفاء شات tawk.to الأصلي تماماً ليعمل كودك أنت */
+        #tawkchat-container { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="chat-wrapper">
     <div class="header">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <div style="width:10px; height:10px; background:#2ecc71; border-radius:50%; box-shadow: 0 0 10px #2ecc71;"></div>
-            <span style="font-weight: bold; color: var(--gold);">الدعم المباشر</span>
-        </div>
-        <span style="font-size: 0.8rem; color: #888;">متصل الآن</span>
+        <span id="statusText" style="color: var(--gold); font-weight: bold;">جاري الاتصال...</span>
     </div>
 
     <div class="messages-area" id="msgBox">
-        <div class="msg received">مرحباً بك! كيف يمكننا مساعدتك اليوم؟</div>
+        <div class="msg received">مرحباً! نحن متصلون الآن، كيف نخدمك؟</div>
     </div>
 
     <div class="input-bar">
-        <input type="text" id="userInput" placeholder="اكتب رسالتك هنا..." onkeypress="if(event.key==='Enter')sendToTawk()">
+        <input type="file" id="imgInp" accept="image/*" style="display:none" onchange="upImg()">
+        <button class="btn" onclick="document.getElementById('imgInp').click()">📷</button>
+        <input type="text" id="userInput" placeholder="اكتب رسالتك..." onkeypress="if(event.key==='Enter')sendToTawk()">
         <button class="btn" onclick="sendToTawk()">✦</button>
     </div>
 </div>
-
-<script>
-    const msgBox = document.getElementById('msgBox');
-
-    // إرسال الرسالة من تصميمنا إلى نظام Tawk.to
-    function sendToTawk() {
-        const inp = document.getElementById('userInput');
-        const text = inp.value.trim();
-        
-        if(text !== "") {
-            addMsg(text, 'sent');
-            
-            // الربط البرمجي مع Tawk.to
-            if (typeof Tawk_API !== 'undefined') {
-                Tawk_API.sendMessage(text, function(error){});
-            }
-            inp.value = "";
-        }
-    }
-
-    // استقبال ردك (أنت) من تطبيق Tawk.to وعرضه للعميل
-    var Tawk_API = Tawk_API || {};
-    Tawk_API.onChatMessageAgent = function(message){
-        addMsg(message, 'received');
-    };
-
-    function addMsg(content, side) {
-        const d = document.createElement('div');
-        d.className = 'msg ' + side;
-        d.innerText = content;
-        msgBox.appendChild(d);
-        msgBox.scrollTop = msgBox.scrollHeight;
-    }
-</script>
 
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
@@ -152,8 +51,53 @@ s1.charset='UTF-8';
 s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
+
+// عند جاهزية الشات
+Tawk_API.onLoad = function(){
+    document.getElementById('statusText').innerText = "متصل الآن ✅";
+};
+
+// استقبال الرسائل من التطبيق
+Tawk_API.onChatMessageAgent = function(message){
+    addMsg(message, 'received');
+};
+
+function sendToTawk() {
+    const inp = document.getElementById('userInput');
+    const text = inp.value.trim();
+    if(text !== "") {
+        addMsg(text, 'sent');
+        // محاولة الإرسال لـ Tawk.to
+        try {
+            Tawk_API.sendMessage(text);
+        } catch (e) {
+            console.error("خطأ في الاتصال بالسيرفر");
+        }
+        inp.value = "";
+    }
+}
+
+function upImg() {
+    const file = document.getElementById('imgInp').files[0];
+    if(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            addMsg(`<img src="${e.target.result}">`, 'sent', true);
+            // ملاحظة: صور Tawk.to API تتطلب رفعاً يدوياً للسيرفر، سنكتفي بعرضها هنا
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function addMsg(content, side, isHtml = false) {
+    const d = document.createElement('div');
+    d.className = 'msg ' + side;
+    if(isHtml) d.innerHTML = content; else d.innerText = content;
+    const box = document.getElementById('msgBox');
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
+}
 </script>
 
 </body>
 </html>
-
